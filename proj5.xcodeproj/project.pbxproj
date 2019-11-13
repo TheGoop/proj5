@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BAFABC38237930040028519C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAFABC37237930040028519C /* main.cpp */; };
+		BAFABC38237930040028519C /* flowers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAFABC37237930040028519C /* flowers.cpp */; };
+		BAFABC40237930510028519C /* utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BAFABC3E237930510028519C /* utilities.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,9 @@
 
 /* Begin PBXFileReference section */
 		BAFABC34237930040028519C /* proj5 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = proj5; sourceTree = BUILT_PRODUCTS_DIR; };
-		BAFABC37237930040028519C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		BAFABC37237930040028519C /* flowers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = flowers.cpp; sourceTree = "<group>"; };
+		BAFABC3E237930510028519C /* utilities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = utilities.cpp; sourceTree = "<group>"; };
+		BAFABC3F237930510028519C /* utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +60,9 @@
 		BAFABC36237930040028519C /* proj5 */ = {
 			isa = PBXGroup;
 			children = (
-				BAFABC37237930040028519C /* main.cpp */,
+				BAFABC37237930040028519C /* flowers.cpp */,
+				BAFABC3E237930510028519C /* utilities.cpp */,
+				BAFABC3F237930510028519C /* utilities.h */,
 			);
 			path = proj5;
 			sourceTree = "<group>";
@@ -119,7 +124,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BAFABC38237930040028519C /* main.cpp in Sources */,
+				BAFABC40237930510028519C /* utilities.cpp in Sources */,
+				BAFABC38237930040028519C /* flowers.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
