@@ -64,6 +64,7 @@ int getWords(char words[][MAXWORDLEN+1], int maxWords, const char wordfilename[]
     return numWords;
 }
  */
+
 int getWords(char words[][7], int maxWords, const char wordfilename[])
 {
     if (maxWords < 2)
