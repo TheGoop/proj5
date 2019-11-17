@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cstring>
 using namespace std;
 
 const int maxWords = 2;
@@ -11,42 +12,113 @@ const char WORDFILENAME[] = "/Users/akshay/Desktop/words.txt";
 int countFlowers(char trialWord[], char word[])
 {
     int flowers = 0;
-    int length=(strlen(trialWord) < strlen(word)) ? strlen(trialWord) : strlen(word);
+    //get smallest words length
+    int length = (strlen(trialWord) < strlen(word)) ? strlen(trialWord) : strlen(word);
+    
+    //iterates up to smallest words length to avoid IOE
     for (int i = 0; i < length; i++)
     {
+        //if chars are same at same position, then they are a flower
         if (trialWord[i] == word[i])
         {
+            //increment flower count
             flowers++;
         }
     }
+    
     return flowers;
 }
 
 int countBees(char trialWord[], char word[])
 {
     int bees = 0;
-    int length=(strlen(trialWord) < strlen(word)) ? strlen(trialWord) : strlen(word);
+    
+    //read list for trialWord
+    bool read1[7];
+    for (int i = 0; i < 7; i++)
+    {
+        read1[i] = false;
+    }
+    
+    //read list for word
+    bool read2[7];
+    for (int i = 0; i < 7; i++)
+    {
+        read2[i] = false;
+    }
+    
+    //gets smallest length
+    int length = (strlen(trialWord) < strlen(word)) ? strlen(trialWord) : strlen(word);
+    
+    //iterates through words finding flowers
     for (int i = 0; i < length; i++)
     {
-        //will only count bees if there isn't a flower at the index
-        if (trialWord[i] != word[i])
-        { 
-            
+        //marks all flowers as read so we don't accidentally mark them as bees
+        if (trialWord[i] == word[i])
+        {
+            read1[i] = true;
+            read2[i] = true;
         }
     }
+    
+    // iterates through trialWord
+    for (int i = 0; i < strlen(trialWord); i++)
+    {
+        // iterates through word
+        for (int j = 0; j < strlen(word); j++)
+        {
+            // if not already been read as a flower or bee, and matches a char in word, its a bee
+            if (!read1[i] && !read2[j] && trialWord[j] == word[i])
+            {
+                //increments bee counter and marks the matching chars as already read
+                bees++;
+                read1[i] = true;
+                read2[j] = true;
+            }
+        }
+    }
+    
     
     return bees;
 }
 
+// verifies that all of the cstring is lower case
 bool allLower(char word[])
 {
+    //iterates through cstring
     for (int i = 0; i < strlen(word); i++)
     {
+        // if a char isn't lower case, flag and return false
         if (!islower(word[i]))
         {
             return false;
         }
     }
+    //every character is lower case if one reaches this point, so return true
+    return true;
+}
+
+bool sameWord(char trialWord[], char word[])
+{
+    //must subtract one to ensure you don't have the null character as part of the length
+    int wordLength = strlen(word);
+    
+    //if they aren't the same length off the bat, can't be same word
+    if (strlen(trialWord) != wordLength)
+    {
+        return false;
+    }
+    
+    //iterates through trialWord
+    for (int i = 0; i < strlen(trialWord); i++)
+    {
+        //if theres a spot where the trialWord doesn't equal word thats a flag
+        if (trialWord[i] != word[i])
+        {
+            return false;
+        }
+    }
+    //if it makes it to this point, they are equal and therefore return true
     return true;
 }
 
@@ -71,33 +143,53 @@ int playOneRound(const char words[][7], int nWords, int wordnum)
     char trialWord[100];
     int flowers = 0;
     int bees = 0;
+    //must start tries at 1 because thats the min to guess the word
+    int tries = 1;
+
+    //ease of access variable to access the word
+    char word[7];
+    //iterates through the word in words and copies it to the word variable
+    for (int i = 0; i < strlen(words[wordnum]); i++)
+    {
+        word[i] = words[wordnum][i];
+    }
+    
+    //until the user has guessed the word, this will repeat
     while (true)
     {
         cout << "Trial Word: ";
         cin.getline(trialWord, 100);
-        if (allLower(trialWord) && strlen(trialWord) >= 4 && strlen(trialWord) <= 6)
+        
+        //if the user guesses the word, exits the loop
+        if (sameWord(trialWord, word))
         {
-            // determine bees and flowers
-
-            //int bees = countBees(trialWord, words[wordnum]);
-            //int flowers = countFlowers(trialWord, words[wordnum]);
-            cout << "Flowers: " << flowers << ", Bees: " << bees << endl;
-            
+            break;
         }
         
+        //if the user's inputted word fulfills desired specifications
+        if (allLower(trialWord) && strlen(trialWord) >= 4 && strlen(trialWord) <= 6)
+        {
+            // count the number of bees and flowers in trialWord
+            flowers = countFlowers(trialWord, word);
+            bees = countBees(trialWord, word);
+            // tell the user how many bees and flowers
+            cout << "Flowers: " << flowers << ", Bees: " << bees << endl;
+            // increment the number of tries
+            tries++;
+        }
+        
+        // lets the user know that they didn't input a valid trialWord
         else
         {
             cout << "Your trial word must be a word of 4 to 6 lower case letters." << endl;
+            //should not count invalid try as a try
         }
     }
         
-        
-    
-    
-    
-    return 7;
+    return tries;
 }
 
+//smallbergs loading code to ensure loadWords works
 void smallbergLoadingCode(int n)
 {
     if (n == 2)
@@ -118,11 +210,10 @@ void smallbergLoadingCode(int n)
 
 int main()
 {
-    
-    
     char w[maxWords][7];
     int n = getWords(w, maxWords, WORDFILENAME);
     //smallbergLoadingCode(n);
+    
     if (n < 1 || n > maxWords)
     {
         // should this also happen if n is greater than maxWords?
@@ -130,7 +221,7 @@ int main()
         return 1;
     }
     
-    
+    //gets the number of rounds the user wants to play
     int numOfRounds;
     cout << "How many rounds do you want to play? ";
     cin >> numOfRounds;
@@ -142,28 +233,48 @@ int main()
     int minimum = 0;
     int maximum = 0;
     
+    //repeats for the number of rounds the user wants
     for (int round = 1; round <= numOfRounds; round++)
     {
-        cout << endl;
+        cout << endl; //formatting
         cout << "Round " << round << endl;
         
+        //selects the word to play for the round
         int randIndex = randInt(0, maxWords-1);
         cout << "The mystery word is " << strlen(w[randIndex]) << " letters long." << endl;
+        
         int roundScore = playOneRound(w, maxWords, randIndex);
         
+        //different formatting/syntax to let the user know how many tries they took
+        if (roundScore == 1)
+        {
+            cout << "You got it in 1 try." << endl;
+        }
+        else
+        {
+            cout << "You got it in " << roundScore << " tries." << endl;
+        }
+        
+        //recalulates score average
         scoreSum += roundScore;
         average = scoreSum/round;
+        
+        //updates score minimum
         if (round == 1 || roundScore < minimum)
         {
             minimum = roundScore;
         }
+        
+        //updates score maximum
         if (round == 1 || roundScore > maximum)
         {
             maximum = roundScore;
         }
         
+        //formatting for average to add the two decimal points
         cout.setf(ios::fixed);
         cout.precision(9);
+        //tells user his stats
         cout << "Average: " << setprecision(2) << average << ", minimum: " << minimum << ",  maximum: " << maximum << endl;
     }
     
