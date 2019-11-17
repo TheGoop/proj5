@@ -1,0 +1,282 @@
+#define _CRT_SECURE_NO_DEPRECATE
+#include "utilities.h"
+#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+const int maxWords = 2;
+const char WORDFILENAME[] = "/Users/akshay/Desktop/words.txt";
+
+int countFlowers(char trialWord[], char word[])
+{
+    int flowers = 0;
+    //get smallest words length
+    int length = (strlen(trialWord) < strlen(word)) ? strlen(trialWord) : strlen(word);
+    
+    //iterates up to smallest words length to avoid IOE
+    for (int i = 0; i < length; i++)
+    {
+        //if chars are same at same position, then they are a flower
+        if (trialWord[i] == word[i])
+        {
+            //increment flower count
+            flowers++;
+        }
+    }
+    
+    return flowers;
+}
+
+int countBees(char trialWord[], char word[])
+{
+    int bees = 0;
+    //should only iterate through
+    
+    char copy[7];
+    for (int c = 0; c < strlen(word); c++)
+    {
+        copy[c] = word[c];
+    }
+    
+    bool read[6];
+    for (int i = 0; i < 6; i++)
+    {
+        read[i] = false;
+    }
+    
+    for (int i = 0; i < strlen(trialWord); i++)
+    {
+        for (int j = 0; j < strlen(word); j++)
+        {
+            
+            if (i == j && trialWord[i] == word[j])
+            {
+                read[j] = true;
+                break;
+            }
+            
+            
+            else
+            {
+                if (!read[j])
+                {
+                    if (trialWord[i] == word[j])
+                    {
+                        /**
+                        cout << i << j << endl;
+                        cout << trialWord << endl;
+                        cout << word << endl;
+                        cout << trialWord[i] << word[j] << endl;
+                        cout << endl;*/
+                        bees++;
+                        read[j] = true;
+                    }
+                }
+            }
+        }
+    }
+    
+    return bees;
+}
+
+// verifies that all of the cstring is lower case
+bool allLower(char word[])
+{
+    //iterates through cstring
+    for (int i = 0; i < strlen(word); i++)
+    {
+        // if a char isn't lower case, flag and return false
+        if (!islower(word[i]))
+        {
+            return false;
+        }
+    }
+    //every character is lower case if one reaches this point, so return true
+    return true;
+}
+
+bool sameWord(char trialWord[], char word[])
+{
+    //must subtract one to ensure you don't have the null character as part of the length
+    int wordLength = strlen(word)-1;
+    
+    //if they aren't the same length off the bat, can't be same word
+    if (strlen(trialWord) != wordLength)
+    {
+        return false;
+    }
+    
+    //iterates through trialWord
+    for (int i = 0; i < strlen(trialWord); i++)
+    {
+        //if theres a spot where the trialWord doesn't equal word thats a flag
+        if (trialWord[i] != word[i])
+        {
+            return false;
+        }
+    }
+    //if it makes it to this point, they are equal and therefore return true
+    return true;
+}
+
+int playOneRound(const char words[][7], int nWords, int wordnum)
+{
+//nWords = length of words list
+//words = list of words
+//wordnum = already randomly generated number for the index of word in words
+    
+    //error handling for edge cases, as directed by instructions
+    if (nWords <= 0 || wordnum < 0 || wordnum >= nWords)
+    {
+        return -1;
+    }
+    
+    //this code here will handle the part of game from right after the main tells the user the length of the word until the user specifies their guess word
+    // return -1: error
+    // return 0: not guessed the word
+    // return 1: guessed the word
+    
+    //this function does not write the message about the player successfully determining the mystery wor
+    char trialWord[100];
+    int flowers = 0;
+    int bees = 0;
+    //must start tries at 1 because thats the min to guess the word
+    int tries = 1;
+
+    //ease of access variable to access the word
+    char word[strlen(words[wordnum])];
+    //iterates through the word in words and copies it to the word variable
+    for (int i = 0; i < strlen(words[wordnum]); i++)
+    {
+        word[i] = words[wordnum][i];
+    }
+    
+    //until the user has guessed the word, this will repeat
+    while (true)
+    {
+        cout << "Trial Word: ";
+        cin.getline(trialWord, 100);
+        
+        //if the user guesses the word, exits the loop
+        if (sameWord(trialWord, word))
+        {
+            break;
+        }
+        
+        //if the user's inputted word fulfills desired specifications
+        if (allLower(trialWord) && strlen(trialWord) >= 4 && strlen(trialWord) <= 6)
+        {
+            // count the number of bees and flowers in trialWord
+            flowers = countFlowers(trialWord, word);
+            bees = countBees(trialWord, word);
+            // tell the user how many bees and flowers
+            cout << "Flowers: " << flowers << ", Bees: " << bees << endl;
+            // increment the number of tries
+            tries++;
+        }
+        
+        // lets the user know that they didn't input a valid trialWord
+        else
+        {
+            cout << "Your trial word must be a word of 4 to 6 lower case letters." << endl;
+            //should not count invalid try as a try
+        }
+    }
+        
+    return tries;
+}
+
+//smallbergs loading code to ensure loadWords works
+void smallbergLoadingCode(int n)
+{
+    if (n == 2)
+    {
+        cout << "getWords successfully found the file and read its two words." << endl;
+        cout << "You're ready to start working on Project 5." << endl;
+    }
+    else if (n == -1)
+    {
+        cout << "The path to your file of words is probably incorrect" << endl;
+    }
+    else
+    {
+        cout << "getWords found the file, but loaded " << n
+                 << " words instead of 2" << endl;
+    }
+}
+
+int main()
+{
+    char w[maxWords][7];
+    int n = getWords(w, maxWords, WORDFILENAME);
+    //smallbergLoadingCode(n);
+    
+    if (n < 1 || n > maxWords)
+    {
+        // should this also happen if n is greater than maxWords?
+        cout << "No words were loaded, so I can't play the game.";
+        return 1;
+    }
+    
+    //gets the number of rounds the user wants to play
+    int numOfRounds;
+    cout << "How many rounds do you want to play? ";
+    cin >> numOfRounds;
+    cin.ignore(10000, '\n');
+    
+    
+    double scoreSum = 0;
+    double average = 0;
+    int minimum = 0;
+    int maximum = 0;
+    
+    //repeats for the number of rounds the user wants
+    for (int round = 1; round <= numOfRounds; round++)
+    {
+        cout << endl; //formatting
+        cout << "Round " << round << endl;
+        
+        //selects the word to play for the round
+        int randIndex = randInt(0, maxWords-1);
+        cout << "The mystery word is " << strlen(w[randIndex]) << " letters long." << endl;
+        
+        int roundScore = playOneRound(w, maxWords, randIndex);
+        
+        //different formatting/syntax to let the user know how many tries they took
+        if (roundScore == 1)
+        {
+            cout << "You got it in 1 try." << endl;
+        }
+        else
+        {
+            cout << "You got it in " << roundScore << " tries." << endl;
+        }
+        
+        //recalulates score average
+        scoreSum += roundScore;
+        average = scoreSum/round;
+        
+        //updates score minimum
+        if (round == 1 || roundScore < minimum)
+        {
+            minimum = roundScore;
+        }
+        
+        //updates score maximum
+        if (round == 1 || roundScore > maximum)
+        {
+            maximum = roundScore;
+        }
+        
+        //formatting for average to add the two decimal points
+        cout.setf(ios::fixed);
+        cout.precision(9);
+        //tells user his stats
+        cout << "Average: " << setprecision(2) << average << ", minimum: " << minimum << ",  maximum: " << maximum << endl;
+    }
+    
+    
+    
+    cout << endl;
+}
